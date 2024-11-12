@@ -62,40 +62,26 @@ with st.sidebar:
 
     # Technical indicators selection
     st.markdown("### Select Technical Indicators:")
-    user_rsi = st.checkbox("RSI (Relative Strength Index)")
-    use_tema = st.checkbox("TEMA (Triple Exponential Moving Average)")
-    use_macd = st.checkbox("MACD (Moving Average Convergence Divergence)")
+    selected_technicalindicators = st.radio('Choose a technical indicator', ('RSI (Relative Strength Index)', 'MACD (Triple Exponential Moving Average)', 'TEMA (Triple Exponential Moving Average)'))
+    
+    # Selectbox to decide whether to pair indicator with ML model
+    st.markdown("### Pair with Machine Learning Model?")
+    pair_option = st.selectbox(
+        "Would you like to pair the selected technical indicator with the chosen ML model?",
+        ("Yes", "No")
+    )
 
     # Machine learning models selection
     st.markdown("### Select Machine Learning Model:")
     selected_model = st.radio('Choose a model to pair with indicators', ('Linear Regression', 'LSTM'))
 
-    # Button to execute pairing
-    execute_pairing = st.button('Execute Hybrid Model')
 
-    # Float option
-    pair_float_lst = ['Yes', 'No']
-    selected_pair_float = st.selectbox('Select a float option', pair_float_lst)
-
-# Calling to code
-
-# Initialize
-best_indicator = None
-proft = None
-profit_Percent = None
-
-# Output boxes
-st.markdown("Technical Indicator Dashboard Output")
-
-# First output box
-st.markdown("Best Technical Indicator")
-st.write(best_indicator)
-
-# Second output box
-st.markdown("Net Profit/Loss")
-st.write(profit)
-
-# Third output box
-st.markdown("Net Profit/Loss Percentage")
-st.write("Output for percentage")
+# Logic for Execution
+#if execute:
+ #   if pair_option == "Yes":
+  #      st.write(f"Running {selected_indicator} paired with {selected_model} model...")
+        # Add code to run the hybrid model with the selected indicator and ML model
+   # else:
+    #    st.write(f"Running {selected_indicator} without pairing...")
+        # Add code to run the selected indicator without pairing with ML model
 
