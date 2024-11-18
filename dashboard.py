@@ -19,24 +19,54 @@ sys.path.append('DS-440---Group-2')
 
 # Import everything from mainV2.py
 from mainV2 import *
+from mainV2 import main
 
 # Page configuration
 st.set_page_config(
     page_title="Technical Indicator Dashboard",
     layout="wide",
-    initial_sidebar_state="expanded")
+    initial_sidebar_state="expanded"
+)
 
 # Sidebar for user input
 with st.sidebar:
     st.title('Technical Indicator Dashboard')
 
     # Stock ticker selection
-    stock_ticker_lst = ['dji', 'gdaxi', 'ibex']
+    stock_ticker_lst = ['DJI', 'GDAXI', 'IBEX']
     selected_stock_ticker = st.selectbox('Select a stock', stock_ticker_lst)
 
     # Start and end date selections
     start_date = st.date_input("Select a start date")
     end_date = st.date_input("Select an end date")
+
+    # Add an "Execute" button to pull the data
+    execute = st.button('Fetch Data and Analyze')
+
+# Logic for fetching and displaying data
+if execute:
+    try:
+        # Load data from the backend using the main() function
+        df = main(selected_stock_ticker)
+        
+        # Filter the data based on the selected date range
+        filtered_df = df[(df.index >= pd.Timestamp(start_date)) & (df.index <= pd.Timestamp(end_date))]
+        
+        if not filtered_df.empty:
+            st.write(filtered_df)  # Display the filtered stock data
+            st.success(f"Successfully fetched data for {selected_stock_ticker} from {start_date} to {end_date}.")
+
+            # Display any further analysis, e.g., plots or calculations
+            st.markdown("## Analysis and Visualization")
+            st.line_chart(filtered_df['Close'])  # Example visualization
+
+        else:
+            st.warning("No data available for the selected date range. Please choose different dates.")
+
+    except ValueError as e:
+        st.error(f"An error occurred while fetching data: {e}")
+    except Exception as e:
+        st.error(f"An unexpected error occurred: {e}")
 
     # Technical indicators selection
     st.markdown("### Select Technical Indicators:")
@@ -69,37 +99,31 @@ with st.sidebar:
         selected_model = "Not Using Pair"
         selected_strategy = "Not Using Strategy"
 
-# **Add the "Execute Hybrid Model" Button Below the Sidebar Section**
+# Add the "Execute Hybrid Model" Button Below the Sidebar Section
 execute = st.sidebar.button('Execute Hybrid Model', key='execute_button')
 
-# **Logic for Button Execution**
+# Logic for Button Execution
 if execute:
-    # Load data based on selected stock ticker
-    st.write(f"Loading data for {selected_stock_ticker} from {start_date} to {end_date}...")
-    df = load_data(selected_stock_ticker, start_date, end_date)
+    st.write(f"Fetching data for {selected_stock_ticker} from {start_date} to {end_date}...")
 
-    # Apply the selected technical indicator
-    if selected_technical_indicator == 'RSI (Relative Strength Index)':
-        st.write(f"Applying RSI indicator on data...")
-        df = apply_indicator(df, indicator='RSI')
-    elif selected_technical_indicator == 'MACD (Moving Average Convergence Divergence)':
-        st.write(f"Applying MACD indicator on data...")
-        df = apply_indicator(df, indicator='MACD')
-    elif selected_technical_indicator == 'TEMA (Triple Exponential Moving Average)':
-        st.write(f"Applying TEMA indicator on data...")
-        df = apply_indicator(df, indicator='TEMA')
+    # Load data from Yahoo Finance
+    try:
+        stock_data = yf.download(selected_stock_ticker, start=start_date, end=end_date)
+        
+        if stock_data.empty:
+            st.warning("No data found for the selected date range. Please try a different range.")
+        else:
+            st.write(stock_data)  # Display the stock data
 
-    # Pair with Machine Learning Model if selected
-    if pair_option == "Yes":
-        st.write(f"Running {selected_technical_indicator} with {selected_model} using {selected_strategy}...")
-        if selected_model == 'Linear Regression':
-            result = run_model(df, model='Linear Regression', strategy=selected_strategy)
-        elif selected_model == 'LSTM':
-            result = run_model(df, model='LSTM', strategy=selected_strategy)
-        elif selected_model == 'ANN':
-            result = run_model(df, model='ANN', strategy=selected_strategy)
-        st.write(result)
-    else:
-        st.write(f"Running {selected_technical_indicator} without pairing...")
-        result = run_indicator_only(df)
-        st.write(result)
+
+
+            # Pair with Machine Learning Model if selected
+            if pair_option == "Yes":
+                st.write(f"Running {selected_technical_indicator} with {selected_model} using {selected_strategy}...")
+                # Implement your ML model logic here
+            else:
+                st.write(f"Running {selected_technical_indicator} without pairing...")
+                # Add logic if using just the technical indicator
+
+    except Exception as e:
+        st.error(f"An error occurred while fetching the data: {e}")
