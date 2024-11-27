@@ -16,7 +16,7 @@ sys.path.append(os.path.abspath(repo_dir))
 
 # Step 3: Import the main and split_data functions from mainV2
 try:
-    from mainV2_saiem import *
+    from mainV2_saiem.py import *
 except ImportError:
     st.error("Unable to import mainV2. Please ensure the repository was cloned correctly.")
 
