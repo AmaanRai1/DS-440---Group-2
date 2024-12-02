@@ -19,10 +19,10 @@ repo_dir = "DS-440---Group-2"
 sys.path.append(os.path.abspath(repo_dir))
 
 try:
-    from mainV2_amaan import *  # Adjust this based on what you need from the file
-    st.write("Successfully imported `mainV2_amaan.py`!")
+    from final_backend import *  # Adjust this based on what you need from the file
+    st.write("Successfully imported `final_backend.py`!")
 except ImportError as e:
-    st.error(f"Error importing mainV2_amaan: {e}")
+    st.error(f"Error importing final_backend: {e}")
     st.write("sys.path:", sys.path)
 
 
